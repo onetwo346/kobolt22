@@ -32,7 +32,7 @@
   </footer>
 
   <script>
-    // Enhanced Chatbot Logic
+    // Enhanced Chatbot Logic with Sentiment and Realistic Responses
     const chatWindow = document.getElementById('chat-window');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
@@ -46,32 +46,77 @@
       chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to latest message
     }
 
+    // Function to simulate typing indicator
+    function showTypingIndicator() {
+      const typingIndicator = document.createElement('div');
+      typingIndicator.classList.add('bot-message');
+      typingIndicator.textContent = 'Kobolt is typing...';
+      chatWindow.appendChild(typingIndicator);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      return typingIndicator;
+    }
+
+    // Function to remove typing indicator
+    function hideTypingIndicator(typingIndicator) {
+      typingIndicator.remove();
+    }
+
+    // Function to analyze sentiment (basic implementation)
+    function analyzeSentiment(message) {
+      const positiveWords = ['happy', 'great', 'awesome', 'good', 'love', 'excited'];
+      const negativeWords = ['sad', 'bad', 'angry', 'hate', 'frustrated', 'upset'];
+
+      const lowerCaseMessage = message.toLowerCase();
+      let sentiment = 'neutral';
+
+      positiveWords.forEach(word => {
+        if (lowerCaseMessage.includes(word)) sentiment = 'positive';
+      });
+
+      negativeWords.forEach(word => {
+        if (lowerCaseMessage.includes(word)) sentiment = 'negative';
+      });
+
+      return sentiment;
+    }
+
     // Function to generate a bot response
     function getBotResponse(userMessage) {
       const lowerCaseMessage = userMessage.toLowerCase();
+      const sentiment = analyzeSentiment(userMessage);
 
       // Greetings
       if (lowerCaseMessage.includes('hi') || lowerCaseMessage.includes('hello')) {
-        return 'Hello! How can I help you today?';
+        return sentiment === 'positive' ? 'Hey there! 😊 How’s your day going?' : 'Hello! How can I help you today?';
       }
 
       // How are you?
       if (lowerCaseMessage.includes('how are you')) {
-        return 'I’m just a chatbot, but I’m here and ready to help! How about you?';
+        return sentiment === 'positive' ? 'I’m doing great, thanks for asking! How about you?' : 'I’m here and ready to help. How are you feeling?';
       }
 
       // What can you do?
       if (lowerCaseMessage.includes('what can you do')) {
-        return 'I can help you with tasks, answer questions, and provide information. Just ask!';
+        return 'I can help you with tasks, answer questions, and even cheer you up if you’re feeling down! What do you need?';
       }
 
       // Thank you
       if (lowerCaseMessage.includes('thank you') || lowerCaseMessage.includes('thanks')) {
-        return 'You’re welcome! Let me know if you need anything else.';
+        return sentiment === 'positive' ? 'You’re welcome! 😄 Let me know if you need anything else.' : 'No problem at all! Happy to help.';
+      }
+
+      // User expresses positive sentiment
+      if (sentiment === 'positive') {
+        return 'That’s awesome to hear! 😊 How can I assist you further?';
+      }
+
+      // User expresses negative sentiment
+      if (sentiment === 'negative') {
+        return 'I’m sorry to hear that. 😔 Let me know how I can help make things better.';
       }
 
       // Default response
-      return 'I’m still learning, but I’ll do my best to help! Can you rephrase that?';
+      return 'Hmm, I’m still learning, but I’ll do my best to help! Can you rephrase that?';
     }
 
     // Event listener for the send button
@@ -82,11 +127,15 @@
         addMessage('user', userMessage);
         userInput.value = '';
 
+        // Show typing indicator
+        const typingIndicator = showTypingIndicator();
+
         // Simulate bot response after a short delay
         setTimeout(() => {
+          hideTypingIndicator(typingIndicator);
           const botResponse = getBotResponse(userMessage);
           addMessage('bot', botResponse);
-        }, 1000);
+        }, 1500); // Simulate typing delay
       }
     });
 
