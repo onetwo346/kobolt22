@@ -19,6 +19,7 @@
     </div>
     <div class="chat-window" id="chat-window">
       <!-- Chat messages will appear here -->
+      <div class="bot-message">Kobolt: Hi there! How can I assist you today?</div>
     </div>
     <div class="chat-input">
       <input type="text" id="user-input" placeholder="Type your message...">
@@ -31,23 +32,68 @@
   </footer>
 
   <script>
-    // Simple JavaScript for Chatbot Interaction
+    // Enhanced Chatbot Logic
     const chatWindow = document.getElementById('chat-window');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
 
+    // Function to add a message to the chat window
+    function addMessage(sender, message) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+      messageElement.textContent = `${sender === 'user' ? 'You' : 'Kobolt'}: ${message}`;
+      chatWindow.appendChild(messageElement);
+      chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to latest message
+    }
+
+    // Function to generate a bot response
+    function getBotResponse(userMessage) {
+      const lowerCaseMessage = userMessage.toLowerCase();
+
+      // Greetings
+      if (lowerCaseMessage.includes('hi') || lowerCaseMessage.includes('hello')) {
+        return 'Hello! How can I help you today?';
+      }
+
+      // How are you?
+      if (lowerCaseMessage.includes('how are you')) {
+        return 'I’m just a chatbot, but I’m here and ready to help! How about you?';
+      }
+
+      // What can you do?
+      if (lowerCaseMessage.includes('what can you do')) {
+        return 'I can help you with tasks, answer questions, and provide information. Just ask!';
+      }
+
+      // Thank you
+      if (lowerCaseMessage.includes('thank you') || lowerCaseMessage.includes('thanks')) {
+        return 'You’re welcome! Let me know if you need anything else.';
+      }
+
+      // Default response
+      return 'I’m still learning, but I’ll do my best to help! Can you rephrase that?';
+    }
+
+    // Event listener for the send button
     sendButton.addEventListener('click', () => {
       const userMessage = userInput.value.trim();
       if (userMessage) {
         // Display user message
-        chatWindow.innerHTML += `<div class="user-message">You: ${userMessage}</div>`;
+        addMessage('user', userMessage);
         userInput.value = '';
 
-        // Simulate bot response
+        // Simulate bot response after a short delay
         setTimeout(() => {
-          chatWindow.innerHTML += `<div class="bot-message">Kobolt: I'm still learning, but I'll get back to you soon!</div>`;
-          chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to latest message
+          const botResponse = getBotResponse(userMessage);
+          addMessage('bot', botResponse);
         }, 1000);
+      }
+    });
+
+    // Event listener for pressing Enter key
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendButton.click();
       }
     });
   </script>
