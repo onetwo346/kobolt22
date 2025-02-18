@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kobolt - Chatbot</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav>
+    <h1>Kobolt</h1>
+    <a href="index.html">Back to Intro</a>
+  </nav>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <h2>Chat with Kobolt</h2>
+      <p>Ask me anything, and I'll help you out!</p>
+    </div>
+    <div class="chat-window" id="chat-window">
+      <!-- Chat messages will appear here -->
+    </div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your message...">
+      <button id="send-button">Send</button>
+    </div>
+  </div>
+
+  <footer>
+    Designed by <a href="mailto:cosmoscoderr@gmail.com">Kofi Fosu</a>
+  </footer>
+
+  <script>
+    // Simple JavaScript for Chatbot Interaction
+    const chatWindow = document.getElementById('chat-window');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+
+    sendButton.addEventListener('click', () => {
+      const userMessage = userInput.value.trim();
+      if (userMessage) {
+        // Display user message
+        chatWindow.innerHTML += `<div class="user-message">You: ${userMessage}</div>`;
+        userInput.value = '';
+
+        // Simulate bot response
+        setTimeout(() => {
+          chatWindow.innerHTML += `<div class="bot-message">Kobolt: I'm still learning, but I'll get back to you soon!</div>`;
+          chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to latest message
+        }, 1000);
+      }
+    });
+  </script>
+</body>
+</html>
