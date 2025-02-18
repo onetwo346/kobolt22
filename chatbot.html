@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kobolt - Your Super-Smart Companion</title>
+  <title>Kobolt - Chatbot</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,11 +15,11 @@
   <div class="chat-container">
     <div class="chat-header">
       <h2>Chat with Kobolt</h2>
-      <p>Your super-smart companion, ready to answer anything.</p>
+      <p>Ask me anything, and I'll help you out!</p>
     </div>
     <div class="chat-window" id="chat-window">
       <!-- Chat messages will appear here -->
-      <div class="bot-message">Kobolt: Hi! I’m Kobolt, your super-smart companion. Ask me anything! 😊</div>
+      <div class="bot-message">Kobolt: Hi there! How can I assist you today?</div>
     </div>
     <div class="chat-input">
       <input type="text" id="user-input" placeholder="Type your message...">
@@ -32,12 +32,10 @@
   </footer>
 
   <script>
-    // Kobolt's Memory and API Integration
-    let memory = {
-      userPreferences: {},
-      pastConversations: [],
-      userMood: 'neutral'
-    };
+    // Enhanced Chatbot Logic with Sentiment and Realistic Responses
+    const chatWindow = document.getElementById('chat-window');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
 
     // Function to add a message to the chat window
     function addMessage(sender, message) {
@@ -63,52 +61,66 @@
       typingIndicator.remove();
     }
 
-    // Function to call an external API (e.g., OpenAI GPT)
-    async function callKnowledgeAPI(userMessage) {
-      // Replace with your API endpoint and key
-      const apiUrl = 'https://api.openai.com/v1/completions';
-      const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your actual API key
+    // Function to analyze sentiment (basic implementation)
+    function analyzeSentiment(message) {
+      const positiveWords = ['happy', 'great', 'awesome', 'good', 'love', 'excited'];
+      const negativeWords = ['sad', 'bad', 'angry', 'hate', 'frustrated', 'upset'];
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: 'text-davinci-003', // Use a powerful model
-          prompt: userMessage,
-          max_tokens: 150
-        })
+      const lowerCaseMessage = message.toLowerCase();
+      let sentiment = 'neutral';
+
+      positiveWords.forEach(word => {
+        if (lowerCaseMessage.includes(word)) sentiment = 'positive';
       });
 
-      const data = await response.json();
-      return data.choices[0].text.trim();
+      negativeWords.forEach(word => {
+        if (lowerCaseMessage.includes(word)) sentiment = 'negative';
+      });
+
+      return sentiment;
     }
 
     // Function to generate a bot response
-    async function getBotResponse(userMessage) {
+    function getBotResponse(userMessage) {
       const lowerCaseMessage = userMessage.toLowerCase();
+      const sentiment = analyzeSentiment(userMessage);
 
       // Greetings
       if (lowerCaseMessage.includes('hi') || lowerCaseMessage.includes('hello')) {
-        return 'Hello! 😊 How can I assist you today?';
+        return sentiment === 'positive' ? 'Hey there! 😊 How’s your day going?' : 'Hello! How can I help you today?';
       }
 
-      // Use external API for complex questions
-      if (lowerCaseMessage.includes('what') || lowerCaseMessage.includes('where') || lowerCaseMessage.includes('how')) {
-        const typingIndicator = showTypingIndicator();
-        const apiResponse = await callKnowledgeAPI(userMessage);
-        hideTypingIndicator(typingIndicator);
-        return apiResponse;
+      // How are you?
+      if (lowerCaseMessage.includes('how are you')) {
+        return sentiment === 'positive' ? 'I’m doing great, thanks for asking! How about you?' : 'I’m here and ready to help. How are you feeling?';
+      }
+
+      // What can you do?
+      if (lowerCaseMessage.includes('what can you do')) {
+        return 'I can help you with tasks, answer questions, and even cheer you up if you’re feeling down! What do you need?';
+      }
+
+      // Thank you
+      if (lowerCaseMessage.includes('thank you') || lowerCaseMessage.includes('thanks')) {
+        return sentiment === 'positive' ? 'You’re welcome! 😄 Let me know if you need anything else.' : 'No problem at all! Happy to help.';
+      }
+
+      // User expresses positive sentiment
+      if (sentiment === 'positive') {
+        return 'That’s awesome to hear! 😊 How can I assist you further?';
+      }
+
+      // User expresses negative sentiment
+      if (sentiment === 'negative') {
+        return 'I’m sorry to hear that. 😔 Let me know how I can help make things better.';
       }
 
       // Default response
-      return 'I’m here to help! Can you tell me more about what you’re looking for?';
+      return 'Hmm, I’m still learning, but I’ll do my best to help! Can you rephrase that?';
     }
 
     // Event listener for the send button
-    sendButton.addEventListener('click', async () => {
+    sendButton.addEventListener('click', () => {
       const userMessage = userInput.value.trim();
       if (userMessage) {
         // Display user message
@@ -119,9 +131,9 @@
         const typingIndicator = showTypingIndicator();
 
         // Simulate bot response after a short delay
-        setTimeout(async () => {
+        setTimeout(() => {
           hideTypingIndicator(typingIndicator);
-          const botResponse = await getBotResponse(userMessage);
+          const botResponse = getBotResponse(userMessage);
           addMessage('bot', botResponse);
         }, 1500); // Simulate typing delay
       }
